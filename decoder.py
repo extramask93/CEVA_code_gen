@@ -1,7 +1,9 @@
 import sys
 from abc import ABCMeta, abstractmethod
 from bs4 import BeautifulSoup as bs
+from collections import namedtuple
 import re
+BitLocation = namedtuple("BitLocation","bitNr","bitPos","BitLoc")
 def SplitTokens(instString):
     iscond = re.search("\{.*\}",instString)
     cond =""
@@ -60,6 +62,7 @@ class VectorRegister(BaseToken):
         sib = found.find_next_sibling('th')
         self.symbol = sib.text
         found2 = sib.find_all_next(name = 'th', string = re.compile(self.symbol+".*"))
+        Locations = []
         for bit in found2:
             loc = bit.find_next_sibling(name = 'th', string = re.compile("(CW|opcode).*"))
             i =0
@@ -68,7 +71,7 @@ class VectorRegister(BaseToken):
                     break
                 else:
                     i = i+1
-            print("bit: {0},location: {1},shift: {2}".format(bit.text,loc.text,i))
+            BitLocation(bit.text.spilt()[1],loc.text.split()[0],i)
 
         return
     def GenerateMacro(self):
